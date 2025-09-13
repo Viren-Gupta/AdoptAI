@@ -1,27 +1,27 @@
-# Implementing RAG based LLM interactions
+# Implementing RAG based AI Code generation
 
 ## What is RAG
-RAG stands for Retrieval Augmented Generation. This is a technique that enhances Large Language Models (LLMs) by connecting them to external domain specific sources to generate more relevant and accurate responses. There are two parts involved in RAG.
+RAG stands for Retrieval Augmented Generation. This is a technique that enhances Large Language Models (LLMs) by connecting them to external domain specific sources to generate more relevant and accurate responses. 
 This is useful in scenarios where we want to have the model respond in a particular way that is specific to our domain. 
 
 Example: We want a customer chat application to generate the best response from LLM using the firm's recommended practices which is data internal to the firm and not already learnt by LLM.
 
+There are two parts involved in RAG - search input in domain data source followed by LLM search.
 ## AI coding assistant using RAG
 Many AI coding assistants use RAG to generate the best code responses to the user. Following are the steps involved:-
 1. User asks query to generate the code
 2. Agent finds code content from repository which is similar to the user query.This is done by using vector databases.
 3. Vector database already indexes the repository code before hand and persists the same.
-4. User query is fired to the vector database which returns similar content based on semantic similarity search algorithms.
-5. The vector database result is then augmented with user query to prepare a final query which is sent as input to the LLM
+4. User query is fired to the vector database which returns similar code based on semantic similarity search algorithms.
+5. The vector database result is then augmented with original user query to prepare a final query which is sent as input to the LLM
 6. LLM returns the response and generates the code.
 
 ## Sample implementation
 
 In this example, we try to simulate the above flow in a simpler way:-
-1. ollama provided Gemma3 - LLM downloaded on local machine. This is a free usage LLM which runs on your local and does not interact with internet.
-2. Python - Implement the above agent logic.
-3. Cosine similarity - This is used to implement similarity logic for creating an in memory version of vector database in python.
-4. Static code snippets - We place 3 static code snippets to simulate repository code
+1. ollama provided Gemma3 - This is a LLM that will be downloaded on local machine. This is a free usage LLM which runs on your local and does not interact with internet.
+2. Cosine similarity - This is used to implement similarity logic for creating an in memory version of vector database in python. 
+3. Static code snippets - We place 3 static code snippets to simulate repository code
 
 ### Steps to follow
 
@@ -32,15 +32,15 @@ In this example, we try to simulate the above flow in a simpler way:-
 5. `python Runner.py`
 6. When prompted enter user query - `Generate method in python to multiply two numbers`
 7. Enter 1 for Rag based search when prompted. Enter 0 for non rag based search (directly from LLM)
-8. Results will be generated
+8. Results will be generated. For RAG based search, we first query vector database and then query the LLM 
 
-### Sample response
+### Sample run
 
 
 User query - `Generate method in python to multiply two numbers`
 Selected 1 for Rag based search
 
-Upon doing vector based similarity search, we got the following code snippet(`snippet_2.txt`) that highly matches with user query
+Upon doing vector based similarity search, we got the following repository code snippet(`snippet_2.txt`) that highly matches with user query
 ```function multipleNumbers(int a, int b) {
 int result = a * b;
 //multiple two numbers
@@ -48,19 +48,20 @@ if (result == 0), return 0
 return result
 }`
 ```
-Now we create augmented query as the following by combining original user query with the above similar search results
+Now we create augmented query by combining original user query with the above similar search results
 
 Model input query:
 
 ````
-Generate method in python to multiply two numbers with reference as the following 
-function multipleNumbers(int a, int b) {
+<Original Query>Generate method in python to multiply two numbers</Original Query> with reference as the following 
+<Vector similarity result>function multipleNumbers(int a, int b) {
 
    int result = a * b;
    //multiple two numbers
    if (result == 0), return 0
    return result
 }
+</Vector similarity result>
 ````
 
 Model response
@@ -147,4 +148,4 @@ print(f"The product of {num1} and {num2} is: {product}") # Output: The product o
 
 Note that now there is no mention of `if result == 0` in the generated code since model did not respect the existing repository code pattern.
 
-This is how AI based code assistants use RAG to augment the LLM search using the existing repository codebase patterns and practices.
+This is how AI based code assistants use RAG to augment the LLM search for accurate results using the existing repository codebase patterns and practices.
