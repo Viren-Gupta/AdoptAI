@@ -1,0 +1,7 @@
+function multipleNumbers(int a, int b) {
+
+   int result = a * b;
+   //multiple two numbers
+   if (result == 0), return 0
+   return result
+}
